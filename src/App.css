@@ -1,0 +1,26 @@
+
+@import "tailwindcss";
+
+ /* slider of dots */
+.swiper {
+  --swiper-pagination-bullet-size: 12px;      /* default is 8px */
+  --swiper-pagination-bullet-horizontal-gap: 6px;
+  --swiper-pagination-color: gray;             /* active dot color */
+  --swiper-pagination-bullet-inactive-color: white;
+  --swiper-pagination-bullet-inactive-opacity: 0.6;
+}
+
+.swiper-pagination-bullet {
+  width: 14px;
+  height: 14px;
+  background-color: white;
+  opacity: 1;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: gray;
+  width: 18px;      /* e.g. make the active dot slightly bigger/oval */
+  border-radius: 9px;
+}
+
+ /* slider dots ends */
