@@ -4,7 +4,7 @@ import logo from "./assets/BabalEyeWearLogo.png";
 import slider1 from "./assets/SliderPic/slider1.png";
 import slider2 from "./assets/SliderPic/slider2.png";
 import slider3 from "./assets/SliderPic/slider3.png";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
@@ -24,6 +24,10 @@ import frames3 from "./assets/Frames_Pic/Round.png";
 import frames4 from "./assets/Frames_Pic/Squares.png";
 import frames5 from "./assets/Frames_Pic/Squares.png";
 
+import trendy1 from "./assets/Trendy_Pic/trendy1.jpg";
+import trendy2 from "./assets/Trendy_Pic/trendy2.jpg";
+import trendy3 from "./assets/Trendy_Pic/trendy3.jpg";
+import trendy4 from "./assets/Trendy_Pic/trendy4.jpg";
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -42,14 +46,62 @@ function App() {
 
   // 8 Total Products
   const products = [
-    { id: 1, name: "Transparent White Square Sunglass", image: product1, oldPrice: 2000, price: 1700 },
-    { id: 2, name: "Gold Double Bridge Sunglass", image: product2, oldPrice: 2200, price: 1870 },
-    { id: 3, name: "Black Matte Round Frame", image: product3, oldPrice: 2200, price: 1870 },
-    { id: 4, name: "Classic Tortoise Shell Frame", image: product4, oldPrice: 2200, price: 1870 },
-    { id: 5, name: "Silver Metal Wireframe Eyeglasses", image: product1, oldPrice: 2100, price: 1785 },
-    { id: 6, name: "Vintage Aviator Dark Sunglasses", image: product2, oldPrice: 2500, price: 2125 },
-    { id: 7, name: "Retro Cat Eye Oversized Frame", image: product3, oldPrice: 2300, price: 1955 },
-    { id: 8, name: "Urban Clear Wayfarer Eyeglasses", image: product4, oldPrice: 1900, price: 1615 },
+    {
+      id: 1,
+      name: "Transparent White Square Sunglass",
+      image: product1,
+      oldPrice: 2000,
+      price: 1700,
+    },
+    {
+      id: 2,
+      name: "Gold Double Bridge Sunglass",
+      image: product2,
+      oldPrice: 2200,
+      price: 1870,
+    },
+    {
+      id: 3,
+      name: "Black Matte Round Frame",
+      image: product3,
+      oldPrice: 2200,
+      price: 1870,
+    },
+    {
+      id: 4,
+      name: "Classic Tortoise Shell Frame",
+      image: product4,
+      oldPrice: 2200,
+      price: 1870,
+    },
+    {
+      id: 5,
+      name: "Silver Metal Wireframe Eyeglasses",
+      image: product1,
+      oldPrice: 2100,
+      price: 1785,
+    },
+    {
+      id: 6,
+      name: "Vintage Aviator Dark Sunglasses",
+      image: product2,
+      oldPrice: 2500,
+      price: 2125,
+    },
+    {
+      id: 7,
+      name: "Retro Cat Eye Oversized Frame",
+      image: product3,
+      oldPrice: 2300,
+      price: 1955,
+    },
+    {
+      id: 8,
+      name: "Urban Clear Wayfarer Eyeglasses",
+      image: product4,
+      oldPrice: 1900,
+      price: 1615,
+    },
   ];
 
   const frames = [
@@ -57,7 +109,7 @@ function App() {
     { image: frames2, name: "Clubmaster" },
     { image: frames3, name: "Round" },
     { image: frames4, name: "Square" },
-    { image: frames5, name: "EyeGlasses"}
+    { image: frames5, name: "EyeGlasses" },
   ];
 
   return (
@@ -74,16 +126,18 @@ function App() {
           {/* Desktop nav */}
           <nav className="hidden md:flex gap-5 lg:gap-8 text-black font-medium">
             {navItems.map((item) => (
-              <Link
+              <NavLink
                 key={item.id}
                 to={item.path}
-                className="relative py-1 transition-colors duration-300 hover:text-gray-600
-                           after:content-[''] after:absolute after:left-0 after:-bottom-0.5
-                           after:h-[2px] after:w-0 after:bg-black after:transition-all after:duration-300
-                           hover:after:w-full"
+                className={({ isActive }) =>
+                  `relative py-1 transition-colors duration-300 hover:text-gray-600
+                   after:content-[''] after:absolute after:left-0 after:-bottom-0.5
+                   after:h-[2px] after:bg-black after:transition-all after:duration-300
+                   ${isActive ? "after:w-full font-semibold text-black" : "after:w-0 hover:after:w-full"}`
+                }
               >
                 {item.name}
-              </Link>
+              </NavLink>
             ))}
           </nav>
 
@@ -121,14 +175,20 @@ function App() {
         >
           <nav className="flex flex-col px-6 py-4 gap-4 text-black font-medium">
             {navItems.map((item) => (
-              <Link
+              <NavLink
                 key={item.id}
                 to={item.path}
                 onClick={() => setMenuOpen(false)}
-                className="transition-colors duration-300 hover:text-gray-600"
+                className={({ isActive }) =>
+                  `transition-colors duration-300 ${
+                    isActive
+                      ? "font-bold text-black border-b-2 border-black w-fit"
+                      : "hover:text-gray-600"
+                  }`
+                }
               >
                 {item.name}
-              </Link>
+              </NavLink>
             ))}
             <div className="flex items-center gap-3 pt-2">
               <input
@@ -186,12 +246,16 @@ function App() {
                      shadow-black/10 shadow-lg transition-shadow duration-300 hover:shadow-xl"
         >
           <div className="flex gap-4 sm:gap-6 p-2 sm:ml-4 items-center justify-center text-center sm:text-left">
-            <span className="material-symbols-outlined shrink-0">eyeglasses_2</span>
+            <span className="material-symbols-outlined shrink-0">
+              eyeglasses_2
+            </span>
             <span>
               <p className="text-blue-700 text-xs tracking-tight font-semibold">
                 POWER UP YOUR FRAMES
               </p>
-              <p className="text-sm sm:text-base">High-quality power lenses for any frames</p>
+              <p className="text-sm sm:text-base">
+                High-quality power lenses for any frames
+              </p>
             </span>
           </div>
 
@@ -234,7 +298,9 @@ function App() {
                      transition-all duration-300 hover:bg-blue-700 hover:scale-105
                      disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
         >
-          <span className="material-symbols-outlined text-lg">chevron_left</span>
+          <span className="material-symbols-outlined text-lg">
+            chevron_left
+          </span>
         </button>
 
         <button
@@ -246,7 +312,9 @@ function App() {
                      transition-all duration-300 hover:bg-blue-700 hover:scale-105
                      disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
         >
-          <span className="material-symbols-outlined text-lg">chevron_right</span>
+          <span className="material-symbols-outlined text-lg">
+            chevron_right
+          </span>
         </button>
 
         <Swiper
@@ -307,61 +375,110 @@ function App() {
         SHOP BY FRAME SHAPE
       </div>
 
-     {/* frames */}
-<div className="max-w-[1200px] mx-auto px-4   flex justify-center">
-  {/* Expanded grid container by 40px (+20px per column) */}
-  <div className="grid grid-cols-2 gap-2 sm:gap-4 justify-items-center w-full max-w-[460px]">
-    {frames.slice(0, 2).map((frame, index) => (
+      {/* frames */}
+        <div className="max-w-[1200px] mx-auto px-4 flex justify-center">
+        <div className="grid grid-cols-2 gap-2 sm:gap-4 justify-items-center w-full max-w-[460px]">
+          {frames.slice(0, 2).map((frame, index) => (
+            <div
+              key={index}
+              className="flex flex-col items-center group cursor-pointer p-3 xs:p-5 rounded-2xl transition-all duration-300 w-full max-w-[220px]"
+            >
+              <div className="w-[110px] h-[110px] xs:w-[140px] xs:h-[140px] sm:w-[170px] sm:h-[170px] flex items-center justify-center overflow-hidden">
+                <img
+                  src={frame.image}
+                  alt={frame.name}
+                  loading="lazy"
+                  className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110"
+                />
+              </div>
+
+              <p className="mt-[-15px] xs:mt-[-25px] text-center text-sm xs:text-base sm:text-lg">
+                {frame.name}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="max-w-[1200px] mx-auto px-4 mb-16 flex justify-center">
+        <div className="grid grid-cols-3 gap-2 xs:gap-4 sm:gap-8 md:gap-16 lg:gap-24 justify-items-center w-full max-w-[600px]">
+          {frames.slice(2, 5).map((frame, index) => (
+            <div
+              key={index}
+              className="flex flex-col items-center group cursor-pointer p-2 xs:p-3 sm:p-5 rounded-2xl transition-all duration-300 w-full max-w-[220px]"
+            >
+              <div className="w-[90px] h-[90px] xs:w-[110px] xs:h-[110px] sm:w-[140px] sm:h-[140px] lg:w-[170px] lg:h-[170px] flex items-center justify-center overflow-hidden">
+                <img
+                  src={frame.image}
+                  alt={frame.name}
+                  loading="lazy"
+                  className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110"
+                />
+              </div>
+
+              <p className="mt-[-10px] xs:mt-[-15px] sm:mt-[-25px] text-center text-xs xs:text-sm sm:text-base lg:text-lg">
+                {frame.name}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* frames */}
+
+      {/* trendy collection section */}
+      <div className="text-center text-[18px] sm:text-[22px] mt-10">
+        TRENDY COLLECTIONS ON
+      </div>
+      <div className="text-center text-[28px] sm:text-[46px] font-bold mb-8">
+        OUR CATEGORIES
+      </div>
+
+     <div className="max-w-[1200px] mx-auto px-4 my-10">
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    {[
+      { img: trendy1, title: "Women Collection", subtitle: "20+ Frames" },
+      { img: trendy2, title: "Men Collection", subtitle: "15+ Frames" },
+      { img: trendy3, title: "Athlete Collection", subtitle: "Performance" },
+      { img: trendy4, title: "Kids Collection", subtitle: "Durable & Fun" },
+    ].map((item, index) => (
       <div
         key={index}
-        /* Expanded card max-width by +20px (200px -> 220px) */
-        className="flex flex-col items-center group cursor-pointer p-5 rounded-2xl transition-all duration-300 w-full max-w-[220px]"
+        className="group relative h-[360px] w-full overflow-hidden  rounded-br-[60px] bg-gray-100 shadow-md transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl cursor-pointer"
       >
-        {/* Increased image container by +20px (140px/170px) */}
-        <div className="w-[140px] h-[140px] sm:w-[170px] sm:h-[170px] flex items-center justify-center overflow-hidden">
-          <img
-            src={frame.image}
-            alt={frame.name}
-            className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110"
-          />
-        </div>
+        {/* Background Image with Zoom */}
+        <img
+          src={item.img}
+          alt={item.title}
+          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+        />
 
-        <p className="mt-[-25px] text-center text-base sm:text-lg">
-          {frame.name}
-        </p>
+        {/* Gradient Overlay for Readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-70 transition-opacity duration-300 group-hover:opacity-80" />
+
+        {/* Content Container */}
+        <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col justify-end text-white">
+          <span className="text-xs font-semibold tracking-wider text-blue-400 uppercase transform translate-y-2 transition-transform duration-300 group-hover:translate-y-0">
+            {item.subtitle}
+          </span>
+          <h3 className="text-xl font-bold mt-1 transform translate-y-1 transition-transform duration-300 group-hover:translate-y-0">
+            {item.title}
+          </h3>
+
+          {/* Action Link / Arrow */}
+          <div className="flex items-center gap-2 mt-3 text-sm font-medium text-gray-300 opacity-0 transform translate-y-3 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
+            <span>Explore Now</span>
+            <span className="material-symbols-outlined text-sm transition-transform duration-300 group-hover:translate-x-1">
+              arrow_forward
+            </span>
+          </div>
+        </div>
       </div>
     ))}
   </div>
 </div>
 
-
-<div className="max-w-[1200px] mx-auto px-4 mb-16  flex justify-center">
-  {/* Expanded grid container by 40px (+20px per column) */}
-  <div className="grid grid-cols-3 gap-2 sm:gap-60 justify-items-center w-full max-w-[460px]">
-    {frames.slice(2, 5).map((frame, index) => (
-      <div
-        key={index}
-        /* Expanded card max-width by +20px (200px -> 220px) */
-        className="flex flex-col items-center group cursor-pointer p-5 rounded-2xl transition-all duration-300 w-full max-w-[220px]"
-      >
-        {/* Increased image container by +20px (140px/170px) */}
-        <div className="w-[140px] h-[140px] sm:w-[170px] sm:h-[170px] flex items-center justify-center overflow-hidden">
-          <img
-            src={frame.image}
-            alt={frame.name}
-            className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110"
-          />
-        </div>
-
-        <p className="mt-[-25px] text-center text-base sm:text-lg">
-          {frame.name}
-        </p>
-      </div>
-    ))}
-  </div>
-</div>
-   {/* frames */}
-   
+      {/* trendy collection section */}
     </>
   );
 }
