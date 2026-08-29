@@ -51,6 +51,8 @@ function Login() {
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
+      window.dispatchEvent(new Event("storage"));
+window.dispatchEvent(new CustomEvent("authChange"));
       navigate("/");
 
     } catch (err) {
@@ -120,7 +122,7 @@ function Login() {
               disabled={isLoading}
               className="w-full bg-[#187A6B] cursor-pointer hover:bg-[#3A9587] text-white font-medium py-3 text-sm rounded-xl transition duration-200 disabled:opacity-50 mt-1"
             >
-              {isLoading ? "Signing in..." : "Sign In"}
+              {isLoading ? "Logging in..." : "Log In"}
             </button>
 
             {/* Dynamic Divider */}
