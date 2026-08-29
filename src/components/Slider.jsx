@@ -1,6 +1,5 @@
 import React, { useRef } from "react";
 
-// Update the paths to go up one folder using "../"
 import slider1 from "../assets/SliderPic/slider1.png";
 import slider2 from "../assets/SliderPic/slider2.png";
 import slider3 from "../assets/SliderPic/slider3.png";

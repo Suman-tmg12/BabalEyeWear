@@ -16,8 +16,8 @@ const Navbar = () => {
     <div className="fixed z-20 w-full top-0 left-0">
       <header className="flex justify-between items-center bg-white px-4 sm:px-6 lg:px-10 py-3 shadow-sm">
        <img src={logo} alt="Babal Eyewear" onClick={() => {
-                                                          navigate("/");
-                                                          window.scrollTo({ top: 0, behavior: "smooth" });}}
+                                                   navigate("/");
+                                                   window.scrollTo({ top: 0, behavior: "smooth" });}}
                className="w-16 ml-0 sm:ml-4 lg:ml-8 sm:w-20 lg:w-24 cursor-pointer transition-transform duration-300 hover:scale-105"/>
 
         {/* Desktop nav */}
@@ -44,10 +44,10 @@ const Navbar = () => {
             type="search"
             placeholder="Search..."
             className="bg-white rounded-full px-4 lg:px-5 py-2 border border-gray-300 outline-none
-                         w-32 lg:w-48 transition-all duration-300 focus:w-40 lg:focus:w-64 focus:border-black"
+                       w-32 lg:w-48 transition-all duration-300 focus:w-40 lg:focus:w-64 focus:border-black"
           />
 
-          <button className="bg-[#187A6B] text-white px-5 lg:px-6 py-2 rounded-full hover:bg-[#12665A] transition-colors duration-300 cursor-pointer">
+          <button onClick={() => navigate('/auth/register')} className="bg-[#187A6B] text-white px-5 lg:px-6 py-2 rounded-full hover:bg-[#12665A] transition-colors duration-300 cursor-pointer">
             Sign In
           </button>
         </div>
@@ -68,7 +68,7 @@ const Navbar = () => {
       {/* Mobile nav panel */}
       <div
         className={`md:hidden bg-white overflow-hidden transition-all duration-300 ease-in-out shadow-sm
-                      ${menuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
+                    ${menuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
       >
         <nav className="flex flex-col px-6 py-4 gap-4 text-black font-medium">
           {navItems.map((item) => (
@@ -93,7 +93,13 @@ const Navbar = () => {
               placeholder="Search..."
               className="flex-1 bg-white rounded-full px-4 py-2 border border-gray-300 outline-none transition-colors duration-300 focus:border-black"
             />
-            <button className="bg-black text-white px-5 py-2 rounded-full hover:bg-gray-700 transition-colors duration-300 cursor-pointer">
+            <button 
+              onClick={() => {
+                navigate('/auth/register');
+                setMenuOpen(false);
+              }} 
+              className="bg-[#187A6B] text-white px-5 py-2 rounded-full hover:bg-[#12665A] transition-colors duration-300 cursor-pointer"
+            >
               Sign In
             </button>
           </div>
