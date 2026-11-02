@@ -1,34 +1,38 @@
 import React, { useState, useEffect, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../assets/BabalEyeWear.png";
-import { FiShoppingCart } from 'react-icons/fi';
+import { FiShoppingCart } from "react-icons/fi";
+import { isLoggedIn, getUser, getDisplayName, logout } from "../utils/auth";
+
+const navItems = [
+  { id: 1, name: "Home", path: "/" },
+  { id: 2, name: "About", path: "/about" },
+  { id: 3, name: "Company", path: "/company" },
+  { id: 4, name: "Services", path: "/services" },
+  { id: 5, name: "Contact", path: "/contact" },
+];
+
+// Same check the route guards use, so the navbar and the pages always agree
+const readAuth = () => ({ loggedIn: isLoggedIn(), user: getUser() });
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
-  
-  const [cartCount, setCartCount] = useState(1); 
-  const [user, setUser] = useState(null);
 
-  // Function to check localStorage and update state
-  const checkUserAuth = () => {
-    const storedUser = localStorage.getItem("user");
-    const token = localStorage.getItem("token");
-    if (storedUser && token) {
-      setUser(JSON.parse(storedUser));
-    } else {
-      setUser(null);
-    }
-  };
+  const [auth, setAuth] = useState(readAuth);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // TODO: connect to your real cart. It was a hardcoded 1, which showed a fake badge.
+  const cartCount = 0;
 
   useEffect(() => {
-    // Check on initial load
-    checkUserAuth();
+    const refreshAuth = () => setAuth(readAuth());
 
-    // Listen for custom login/logout events across components
-    window.addEventListener("authChange", checkUserAuth);
+    // Login/logout in this tab (authChange) or in another tab (storage)
+    window.addEventListener("authChange", refreshAuth);
+    window.addEventListener("storage", refreshAuth);
 
     // Close dropdown when clicking outside
     const handleClickOutside = (event) => {
@@ -39,47 +43,45 @@ const Navbar = () => {
     document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-      window.removeEventListener("authChange", checkUserAuth);
+      window.removeEventListener("authChange", refreshAuth);
+      window.removeEventListener("storage", refreshAuth);
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    
-    // Trigger event so navbar updates instantly on logout too
-    window.dispatchEvent(new Event("authChange"));
-    
-    setUser(null);
+    logout(); // clears token + user and fires authChange
+    setAuth(readAuth());
     setDropdownOpen(false);
-    navigate("/auth/login");
+    setMenuOpen(false);
+    navigate("/Auth/Login", { replace: true });
   };
 
-  const navItems = [
-    { id: 1, name: "Home", path: "/" },
-    { id: 2, name: "About", path: "/about" },
-    { id: 3, name: "Company", path: "/company" },
-    { id: 4, name: "Services", path: "/services" },
-    { id: 5, name: "Contact", path: "/contact" },
-  ];
-
-const getUserInitial = () => {
-    if (user) {
-      // Check common property names depending on your backend schema
-      const name = user.name || user.firstName || user.fullName || "User";
-      return name.charAt(0).toUpperCase();
-    }
-    return "U"; // Default letter if no user is found
+  const goToProfile = () => {
+    setDropdownOpen(false);
+    setMenuOpen(false);
+    navigate("/UserProfile");
   };
+
+  // Redirect to the search page with the typed query
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const term = searchTerm.trim();
+    if (!term) return;
+    navigate(`/search?q=${encodeURIComponent(term)}`);
+    setMenuOpen(false); // close mobile menu if open
+  };
+
+  const displayName = getDisplayName(auth.user) || "Account";
+  const initial = displayName.charAt(0).toUpperCase();
 
   return (
     <div className="fixed z-20 w-full top-0 left-0">
       <header className="flex justify-between items-center bg-white px-4 sm:px-6 lg:px-10 py-3 shadow-sm">
         {/* Logo */}
-        <img 
-          src={logo} 
-          alt="Babal Eyewear" 
+        <img
+          src={logo}
+          alt="Babal Eyewear"
           onClick={() => {
             navigate("/");
             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -107,15 +109,21 @@ const getUserInitial = () => {
 
         {/* Desktop actions */}
         <div className="hidden md:flex items-center gap-5">
-          <input
-            type="search"
-            placeholder="Search..."
-            className="bg-white rounded-full px-4 lg:px-5 py-2 border border-gray-300 outline-none
-                       w-32 lg:w-48 transition-all duration-300 focus:w-40 lg:focus:w-64 focus:border-[#187A6B]"
-          />
+          <form onSubmit={handleSearch}>
+            <input
+              type="search"
+              placeholder="Search..."
+              aria-label="Search frames"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              enterKeyHint="search"
+              className="bg-white rounded-full px-4 lg:px-5 py-2 border border-gray-300 outline-none
+                         w-32 lg:w-48 transition-all duration-300 focus:w-40 lg:focus:w-64 focus:border-[#187A6B]"
+            />
+          </form>
 
           {/* Cart Icon */}
-          <div 
+          <div
             className="relative cursor-pointer"
             onClick={() => console.log("Desktop Cart clicked")}
           >
@@ -127,33 +135,40 @@ const getUserInitial = () => {
             )}
           </div>
 
-          {/* Conditional rendering: Profile Circle vs Sign In Button */}
-          {user ? (
+          {/* Profile circle when logged in, Sign In button otherwise */}
+          {auth.loggedIn ? (
             <div className="relative" ref={dropdownRef}>
-              <div 
+              <button
+                type="button"
+                aria-label="Open account menu"
+                aria-haspopup="menu"
+                aria-expanded={dropdownOpen}
                 onClick={() => setDropdownOpen((prev) => !prev)}
                 className="w-10 h-10 rounded-full bg-[#187A6B] text-white flex items-center justify-center font-bold cursor-pointer hover:bg-[#12665A] transition-colors duration-300 shadow-sm select-none"
               >
-                {getUserInitial()}
-              </div>
+                {initial}
+              </button>
 
-              {/* Profile Dropdown Menu */}
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg py-2 z-30">
+                <div
+                  role="menu"
+                  className="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-xl shadow-lg py-2 z-30"
+                >
                   <div className="px-4 py-2 border-b border-gray-100">
-                    <p className="text-sm font-bold text-gray-800 truncate">{user.name || "User"}</p>
-                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                    <p className="text-sm font-bold text-gray-800 truncate">{displayName}</p>
+                    {auth.user?.email && (
+                      <p className="text-xs text-gray-500 truncate">{auth.user.email}</p>
+                    )}
                   </div>
-                  <button 
-                    onClick={() => {
-                      setDropdownOpen(false);
-                      navigate("/profile");
-                    }}
+                  <button
+                    role="menuitem"
+                    onClick={goToProfile}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
                   >
                     My Profile
                   </button>
-                  <button 
+                  <button
+                    role="menuitem"
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                   >
@@ -163,8 +178,8 @@ const getUserInitial = () => {
               )}
             </div>
           ) : (
-            <button 
-              onClick={() => navigate('/auth/login')} 
+            <button
+              onClick={() => navigate("/Auth/Login")}
               className="bg-[#187A6B] text-white px-5 lg:px-6 py-2 rounded-full hover:bg-[#12665A] transition-colors duration-300 cursor-pointer whitespace-nowrap"
             >
               Sign In
@@ -174,8 +189,8 @@ const getUserInitial = () => {
 
         {/* Mobile menu button / wrapper */}
         <div className="flex items-center gap-4 md:hidden">
-          <div 
-            className="relative cursor-pointer" 
+          <div
+            className="relative cursor-pointer"
             onClick={() => console.log("Mobile Cart clicked")}
           >
             <FiShoppingCart className="hover:text-[#187A6B] transition-colors duration-300" size={24} />
@@ -202,7 +217,7 @@ const getUserInitial = () => {
       {/* Mobile nav panel */}
       <div
         className={`md:hidden bg-white overflow-hidden transition-all duration-300 ease-in-out shadow-sm
-                    ${menuOpen ? "max-h-[480px] opacity-100" : "max-h-0 opacity-0"}`}
+                    ${menuOpen ? "max-h-[520px] opacity-100" : "max-h-0 opacity-0"}`}
       >
         <nav className="flex flex-col px-6 py-4 gap-4 text-black font-medium">
           {navItems.map((item) => (
@@ -222,28 +237,40 @@ const getUserInitial = () => {
             </NavLink>
           ))}
 
-          <div className="grid grid-cols-2 gap-3 pt-2">
-            <input
-              type="search"
-              placeholder="Search..."
-              className="w-full bg-white rounded-full px-4 py-2 border border-gray-300 outline-none transition-colors duration-300 focus:border-[#187A6B]"
-            />
-            {user ? (
-              <button 
+          <div className="flex flex-col gap-3 pt-2">
+            <form onSubmit={handleSearch}>
+              <input
+                type="search"
+                placeholder="Search..."
+                aria-label="Search frames"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                enterKeyHint="search"
+                className="w-full bg-white rounded-full px-4 py-2 border border-gray-300 outline-none transition-colors duration-300 focus:border-[#187A6B]"
+              />
+            </form>
+
+            {auth.loggedIn ? (
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={goToProfile}
+                  className="w-full bg-[#187A6B] text-white py-2 rounded-full hover:bg-[#12665A] transition-colors duration-300 cursor-pointer text-center"
+                >
+                  My Profile
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="w-full bg-red-500 text-white py-2 rounded-full hover:bg-red-600 transition-colors duration-300 cursor-pointer text-center"
+                >
+                  Log Out
+                </button>
+              </div>
+            ) : (
+              <button
                 onClick={() => {
-                  handleLogout();
+                  navigate("/Auth/Login");
                   setMenuOpen(false);
                 }}
-                className="w-full bg-red-500 text-white py-2 rounded-full hover:bg-red-600 transition-colors duration-300 cursor-pointer text-center"
-              >
-                Log Out
-              </button>
-            ) : (
-              <button 
-                onClick={() => {
-                  navigate('/auth/login');
-                  setMenuOpen(false);
-                }} 
                 className="w-full bg-[#187A6B] text-white py-2 rounded-full hover:bg-[#12665A] transition-colors duration-300 cursor-pointer text-center"
               >
                 Sign In

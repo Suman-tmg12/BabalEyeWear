@@ -1,12 +1,26 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
+import ProductCard from '../components/ProductCard';
 
-function ProductSliderSection({ title, subtitle, products }) {
+function ProductSliderSection({ title, subtitle, products, currency = '$' }) {
+  const navigate = useNavigate();
   const prevRef = useRef(null);
   const nextRef = useRef(null);
+
+  // Per-card UI state (selected color + wishlist), same behavior as the search page cards
+  const [activeColors, setActiveColors] = useState({});
+  const [wishlist, setWishlist] = useState([]);
+
+  const setColor = (id, idx) => setActiveColors((prev) => ({ ...prev, [id]: idx }));
+  const toggleWishlist = (id) =>
+    setWishlist((l) => (l.includes(id) ? l.filter((i) => i !== id) : [...l, id]));
+
+  const goToProduct = (p) =>
+    navigate(`/product/${p.id}`, { state: { product: p, currency, colorIdx: activeColors[p.id] || 0 } });
 
   return (
     <>
@@ -63,32 +77,22 @@ function ProductSliderSection({ title, subtitle, products }) {
             swiper.params.navigation.prevEl = prevRef.current;
             swiper.params.navigation.nextEl = nextRef.current;
           }}
-          className="py-2"
+          // extra vertical room so the card's hover shadow isn't clipped
+          className="py-2 !pb-6"
         >
           {products?.map((product) => (
-            <SwiperSlide key={product.id}>
-              <div className="group cursor-pointer">
-                <div className="w-full aspect-square rounded-2xl overflow-hidden bg-gray-100">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
-
-                <p className="mt-3 text-sm font-medium text-gray-800 truncate">
-                  {product.name}
-                </p>
-
-                <div className="mt-1 flex items-center gap-2">
-                  <span className="text-sm text-gray-400 line-through">
-                    Rs {product.oldPrice.toLocaleString()}
-                  </span>
-                  <span className="text-sm font-semibold text-red-500">
-                    Rs {product.price.toLocaleString()}
-                  </span>
-                </div>
-              </div>
+            <SwiperSlide key={product.id} className="!h-auto">
+              <ProductCard
+                p={product}
+                list={false}
+                currency={currency}
+                colorIdx={activeColors[product.id] || 0}
+                onColor={(i) => setColor(product.id, i)}
+                fav={wishlist.includes(product.id)}
+                onFav={() => toggleWishlist(product.id)}
+                onOpen={() => goToProduct(product)}
+                onDetails={() => goToProduct(product)}
+              />
             </SwiperSlide>
           ))}
         </Swiper>

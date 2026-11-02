@@ -1,14 +1,14 @@
 import { useState, useRef } from "react";
 import "./Home.css";
 
-import explore from "./assets/Explore.png";
+import explore from "../assets/Explore.png";
 
-import Slider from "./components/Slider";
-import ProductSlider from "./components/ProductSliderSection";
-import PowerBanner from "./components/PowerBanner";
-import FrameShape from "./components/FrameShape";
-import TrendyCollection from "./components/TrendyCollection";
-import Explore from "./components/Explore";
+import Slider from "../components/Slider";
+import ProductSlider from "../components/ProductSliderSection";
+import PowerBanner from "../components/PowerBanner";
+import FrameShape from "../components/FrameShape";
+import TrendyCollection from "../components/TrendyCollection";
+import Explore from "../components/Explore";
 
 // important2
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -17,21 +17,21 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-import product1 from "./assets/Products/product1.png";
-import product2 from "./assets/Products/product2.png";
-import product3 from "./assets/Products/product3.png";
-import product4 from "./assets/Products/product4.png";
+import product1 from "../assets/Products/product1.png";
+import product2 from "../assets/Products/product2.png";
+import product3 from "../assets/Products/product3.png";
+import product4 from "../assets/Products/product4.png";
 
-import frames1 from "./assets/Frames_Pic/cateye.png";
-import frames2 from "./assets/Frames_Pic/Clubmaster.png";
-import frames3 from "./assets/Frames_Pic/Round.png";
-import frames4 from "./assets/Frames_Pic/Squares.png";
-import frames5 from "./assets/Frames_Pic/Squares.png";
+import frames1 from "../assets/Frames_Pic/cateye.png";
+import frames2 from "../assets/Frames_Pic/Clubmaster.png";
+import frames3 from "../assets/Frames_Pic/Round.png";
+import frames4 from "../assets/Frames_Pic/Squares.png";
+import frames5 from "../assets/Frames_Pic/Squares.png";
 
-import trendy1 from "./assets/Trendy_Pic/trendy1.jpg";
-import trendy2 from "./assets/Trendy_Pic/trendy2.jpg";
-import trendy3 from "./assets/Trendy_Pic/trendy3.jpg";
-import trendy4 from "./assets/Trendy_Pic/trendy4.jpg";
+import trendy1 from "../assets/Trendy_Pic/trendy1.jpg";
+import trendy2 from "../assets/Trendy_Pic/trendy2.jpg";
+import trendy3 from "../assets/Trendy_Pic/trendy3.jpg";
+import trendy4 from "../assets/Trendy_Pic/trendy4.jpg";
 
 import { useNavigate } from "react-router-dom";
 

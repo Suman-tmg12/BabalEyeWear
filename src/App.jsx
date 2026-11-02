@@ -1,22 +1,27 @@
 import { Routes, Route } from "react-router-dom";
 
-import Home from "./Home";
-import About from "./About";
-import Company from "./Company";
-import Services from "./Services";
-import Contact from "./Contact";
-import Register from "./Auth/Register"; 
-import Login from "./Auth/Login";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Company from "./pages/Company";
+import Services from "./pages/Services";
+import Contact from "./pages/Contact";
+import Register from "./pages/Auth/Register";
+import Login from "./pages/Auth/Login";
 import ScrollToTop from "./components/ScrollToTop";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import UserProfile from "./pages/UserProfile";
+import SearchPage from "./pages/SearchPage";
+import ProductDetailPage from "./pages/ProductDetailPage";
+import { ProtectedRoute, GuestRoute } from "./components/RouteGuards";
+import Collection from "./pages/Collection";
 
 function App() {
   return (
     <>
       <ScrollToTop />
-      
-        <div className="mb-23">
+
+      <div className="mb-23">
         <Navbar />
       </div>
 
@@ -27,8 +32,24 @@ function App() {
         <Route path="/company" element={<Company />} />
         <Route path="/services" element={<Services />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/Auth/Register" element={<Register />}/>
-        <Route path="/Auth/Login" element={<Login/>}></Route>
+
+        {/* Only for logged-out visitors */}
+        <Route path="/Auth/Register" element={<GuestRoute><Register /></GuestRoute>} />
+        <Route path="/Auth/Login" element={<GuestRoute><Login /></GuestRoute>} />
+
+        {/* Only for logged-in users */}
+        <Route path="/UserProfile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+
+        {/* Shop */}
+        <Route path="/search" element={<SearchPage />} />
+        <Route path="/SearchPage" element={<SearchPage />} />
+        <Route path="/product/:id" element={<ProductDetailPage />} />
+        <Route path="/ProductDetailPage" element={<ProductDetailPage />} />
+
+        <Route path="/Collection" element={<Collection/>} />
+
+        {/* Unknown URL */}
+        <Route path="*" element={<Home />} />
       </Routes>
 
       <div>
