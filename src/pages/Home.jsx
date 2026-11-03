@@ -9,6 +9,7 @@ import PowerBanner from "../components/PowerBanner";
 import FrameShape from "../components/FrameShape";
 import TrendyCollection from "../components/TrendyCollection";
 import Explore from "../components/Explore";
+import ProductGridSection from "../components/ProductGridSection";
 
 // important2
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -16,6 +17,8 @@ import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+
+import { PRODUCTS } from "../data/products";
 
 import product1 from "../assets/Products/product1.png";
 import product2 from "../assets/Products/product2.png";
@@ -40,15 +43,15 @@ function Home() {
 
   // 8 Total Products
   const products = [
-  { id: 1, name: "Transparent White Square Sunglass", image: product1, price: 1700, oldPrice: 2000 },
-  { id: 2, name: "Gold Double Bridge Sunglass", image: product2, price: 1870, oldPrice: 2200 },
-  { id: 3, name: "Black Matte Round Frame", image: product3, price: 1870, oldPrice: 2200 },
-  { id: 4, name: "Classic Tortoise Shell Frame", image: product4, price: 1870, oldPrice: 2200 },
-  { id: 5, name: "Silver Metal Wireframe Eyeglasses", image: product1, price: 1785, oldPrice: 2100 },
-  { id: 6, name: "Vintage Aviator Dark Sunglasses", image: product2, price: 2125, oldPrice: 2500 },
-  { id: 7, name: "Retro Cat Eye Oversized Frame", image: product3, price: 1955, oldPrice: 2300 },
-  { id: 8, name: "Urban Clear Wayfarer Eyeglasses", image: product4, price: 1615, oldPrice: 1900 },
-];
+    { id: 1, name: "Transparent White Square Sunglass", image: product1, price: 1700, oldPrice: 2000 },
+    { id: 2, name: "Gold Double Bridge Sunglass", image: product2, price: 1870, oldPrice: 2200 },
+    { id: 3, name: "Black Matte Round Frame", image: product3, price: 1870, oldPrice: 2200 },
+    { id: 4, name: "Classic Tortoise Shell Frame", image: product4, price: 1870, oldPrice: 2200 },
+    { id: 5, name: "Silver Metal Wireframe Eyeglasses", image: product1, price: 1785, oldPrice: 2100 },
+    { id: 6, name: "Vintage Aviator Dark Sunglasses", image: product2, price: 2125, oldPrice: 2500 },
+    { id: 7, name: "Retro Cat Eye Oversized Frame", image: product3, price: 1955, oldPrice: 2300 },
+    { id: 8, name: "Urban Clear Wayfarer Eyeglasses", image: product4, price: 1615, oldPrice: 1900 },
+  ];
 
   const frames = [
     { image: frames1, name: "Cat Eye" },
@@ -60,35 +63,35 @@ function Home() {
 
   return (
     <>
-      {/* Hero Slider*/}
+      {/* Hero Slider */}
       <Slider />
-      {/* <Slider/> */}
 
       {/* Power Lenses Banner */}
-      <PowerBanner/>
-      {/* Power Lenses Banner */}
+      <PowerBanner />
 
       {/* Clearance Sale Section */}
-      {/* Product Slider Section */}
-      <ProductSlider title="BABALEYEWEAR CLEARANCE SALE"
+      <ProductSlider
+        title="BABALEYEWEAR CLEARANCE SALE"
         subtitle="FLAT 15% OFF"
-        products={products}/>
-        {/* Product Slider Section */}
-         {/* Clearance Sale Section */}
+        products={products}
+      />
 
       {/* Frame Shapes Section */}
-      {/* frames */}
-      <FrameShape/>
-      {/* frames */}
-      {/* Frame Shapes Section */}
+      <FrameShape />
 
+      {/* Trendy collection section */}
+      <TrendyCollection />
 
-      {/* trendy collection section */}
-       <TrendyCollection />
-      {/* trendy collection section */}
+      {/* Full catalogue grid: 4 × 4 per page with pagination */}
+      <ProductGridSection
+        title="Our Frames"
+        subtitle="Browse the full collection"
+        products={PRODUCTS}
+        currency="NPR"
+      />
 
       {/* Explore section */}
-      <Explore />
+      {/* <Explore /> */}
     </>
   );
 }

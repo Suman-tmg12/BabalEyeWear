@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import ProductCard from '../components/ProductCard';
+import useGuardedCart from '../hooks/useGuardedCart';
 
 // Sample products, written in the shape ProductCard expects:
 //   name, brand, shape, price, rating, isNew, description, image, colors: [{ name, hex }]
@@ -155,6 +156,9 @@ const STYLE_OPTIONS = [
   { id: 'rectangle', label: 'Rectangle' },
 ];
 
+// Default lens used by the grid Add to Cart button
+const DEFAULT_LENS = { id: 'single-vision', label: 'Single Vision Rx' };
+
 const isValidCategory = (param) =>
   typeof param === 'string' && CATEGORY_PILLS.some((c) => c.id === param);
 
@@ -162,7 +166,10 @@ export default function EyewearCollectionPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Category is driven by the URL (?category=...) — set by TrendyCollection links
+  // Shared cart: updates the navbar count and the cart page
+  const { addToCart, cartCount } = useGuardedCart();
+
+  // Category is driven by the URL (?category=...), set by TrendyCollection links
   const [selectedCategory, setSelectedCategory] = useState(
     () => (isValidCategory(searchParams.get('category')) ? searchParams.get('category') : 'all')
   );
@@ -170,6 +177,7 @@ export default function EyewearCollectionPage() {
   const [selectedStyles, setSelectedStyles] = useState([]);
   const [sortBy, setSortBy] = useState('featured');
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [toast, setToast] = useState('');
 
   // Sync category when the URL changes from outside (back/forward, another card clicked)
   useEffect(() => {
@@ -184,6 +192,18 @@ export default function EyewearCollectionPage() {
   const toggleWishlist = (id) =>
     setWishlist((list) => (list.includes(id) ? list.filter((i) => i !== id) : [...list, id]));
   const setColor = (id, idx) => setActiveColors((prev) => ({ ...prev, [id]: idx }));
+
+  // Grid Add to Cart: adds straight away with the chosen color and the default lens
+ const quickAddToCart = (p) => {
+  const added = addToCart(p, {
+    colorIdx: activeColors[p.id] || 0,
+    lensId: DEFAULT_LENS.id,
+    lensLabel: DEFAULT_LENS.label,
+  });
+  if (!added) return; // guest was sent to login
+  setToast(`${p.name} added to cart`);
+  setTimeout(() => setToast(''), 2500);
+};
 
   const handleFeatureToggle = (feature) => {
     setSelectedFeatures((prev) =>
@@ -367,7 +387,7 @@ export default function EyewearCollectionPage() {
           </div>
         </aside>
 
-        {/* Product Cards Grid: now uses the shared ProductCard */}
+        {/* Product Cards Grid */}
         <main className="lg:col-span-3">
           {filteredProducts.length === 0 ? (
             <div className="text-center py-16 bg-white border border-slate-200 rounded-xl">
@@ -384,6 +404,7 @@ export default function EyewearCollectionPage() {
                   onColor={(i) => setColor(p.id, i)}
                   fav={wishlist.includes(p.id)}
                   onFav={() => toggleWishlist(p.id)}
+                  onAddToCart={() => quickAddToCart(p)}
                   onDetails={() =>
                     navigate(`/product/${p.id}`, { state: { colorIdx: activeColors[p.id] || 0 } })
                   }
@@ -400,6 +421,18 @@ export default function EyewearCollectionPage() {
           onClick={() => setIsMobileFilterOpen(false)}
           className="fixed inset-0 bg-slate-900/40 z-40 lg:hidden"
         />
+      )}
+
+      {/* Add-to-cart toast */}
+      {toast && (
+        <div
+          role="status"
+          className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[60] bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-full shadow-xl flex items-center gap-2 max-w-[92vw]"
+        >
+          <span className="truncate">
+            {toast} · {cartCount} in cart
+          </span>
+        </div>
       )}
     </div>
   );

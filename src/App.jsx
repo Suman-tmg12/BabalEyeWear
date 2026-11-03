@@ -15,6 +15,7 @@ import SearchPage from "./pages/SearchPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import { ProtectedRoute, GuestRoute } from "./components/RouteGuards";
 import Collection from "./pages/Collection";
+import CheckoutProcess from "./pages/CheckoutProcess";
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
         <Route path="/ProductDetailPage" element={<ProductDetailPage />} />
 
         <Route path="/Collection" element={<Collection/>} />
+        <Route path="/cart" element={<CheckoutProcess />} />
 
         {/* Unknown URL */}
         <Route path="*" element={<Home />} />

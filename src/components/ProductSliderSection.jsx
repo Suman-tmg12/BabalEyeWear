@@ -1,102 +1,115 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
 import ProductCard from '../components/ProductCard';
+import useGuardedCart from '../hooks/useGuardedCart';
 
-function ProductSliderSection({ title, subtitle, products, currency = '$' }) {
+const PREV = 'product-slider-prev';
+const NEXT = 'product-slider-next';
+
+function ProductSliderSection({ title, subtitle, products = [], currency = 'NPR' }) {
   const navigate = useNavigate();
-  const prevRef = useRef(null);
-  const nextRef = useRef(null);
+  const { addToCart } = useGuardedCart();
 
-  // Per-card UI state (selected color + wishlist), same behavior as the search page cards
   const [activeColors, setActiveColors] = useState({});
   const [wishlist, setWishlist] = useState([]);
+  const [toast, setToast] = useState('');
 
-  const setColor = (id, idx) => setActiveColors((prev) => ({ ...prev, [id]: idx }));
+  const setColor = (id, idx) =>
+    setActiveColors((prev) => ({ ...prev, [id]: idx }));
+
   const toggleWishlist = (id) =>
-    setWishlist((l) => (l.includes(id) ? l.filter((i) => i !== id) : [...l, id]));
+    setWishlist((list) =>
+      list.includes(id) ? list.filter((i) => i !== id) : [...list, id]
+    );
+
+  const handleAddToCart = (product) => {
+    const added = addToCart(product, {
+      colorIdx: activeColors[product.id] || 0,
+      lensId: 'single-vision',
+      lensLabel: 'Single Vision Rx',
+    });
+    if (!added) return;
+
+    setToast(`${product.name} added to cart`);
+    setTimeout(() => setToast(''), 2500);
+  };
 
   const goToProduct = (p) =>
-    navigate(`/product/${p.id}`, { state: { product: p, currency, colorIdx: activeColors[p.id] || 0 } });
+    navigate(`/product/${p.id}`, {
+      state: { product: p, currency, colorIdx: activeColors[p.id] || 0 },
+    });
 
   return (
     <>
-      {/* Section Headers */}
-      {title && <div className="text-[22px] sm:text-[25px] text-center">{title}</div>}
-      {subtitle && <div className="text-center text-[32px] sm:text-[40px] font-bold mb-6">{subtitle}</div>}
+      {title && (
+        <div className="text-center text-[22px] sm:text-[25px]">{title}</div>
+      )}
+      {subtitle && (
+        <div className="mb-6 text-center text-[32px] font-bold sm:text-[40px]">
+          {subtitle}
+        </div>
+      )}
 
-      {/* Product Slider Section */}
-      <div className="relative w-full max-w-[1200px] mx-auto px-10 sm:px-12 lg:px-14 mb-16">
+      <div className="relative mx-auto mb-16 w-full max-w-[1200px] px-10 sm:px-12 lg:px-14">
         <button
-          ref={prevRef}
+          type="button"
           aria-label="Previous products"
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10
-                     w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#187A6B] text-white
-                     flex items-center justify-center shadow-md
-                     transition-all duration-300 hover:bg-[#187A6B] hover:scale-105
-                     disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
+          className={`${PREV} absolute left-0 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-[#187A6B] text-white shadow-md transition-all duration-300 hover:scale-105 [&.swiper-button-disabled]:pointer-events-none [&.swiper-button-disabled]:opacity-40 sm:h-10 sm:w-10`}
         >
-          <span className="material-symbols-outlined text-lg">
-            chevron_left
-          </span>
+          <span className="material-symbols-outlined text-lg">chevron_left</span>
         </button>
 
         <button
-          ref={nextRef}
+          type="button"
           aria-label="Next products"
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10
-                     w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#187A6B] text-white
-                     flex items-center justify-center shadow-md
-                     transition-all duration-300 hover:bg-[#187A6B] hover:scale-105
-                     disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
+          className={`${NEXT} absolute right-0 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-[#187A6B] text-white shadow-md transition-all duration-300 hover:scale-105 [&.swiper-button-disabled]:pointer-events-none [&.swiper-button-disabled]:opacity-40 sm:h-10 sm:w-10`}
         >
-          <span className="material-symbols-outlined text-lg">
-            chevron_right
-          </span>
+          <span className="material-symbols-outlined text-lg">chevron_right</span>
         </button>
 
         <Swiper
           modules={[Navigation]}
+          navigation={{ prevEl: `.${PREV}`, nextEl: `.${NEXT}` }}
           spaceBetween={20}
-          slidesPerView={1.4}
+          slidesPerView={1.2}
           slidesPerGroup={1}
           breakpoints={{
-            480: { slidesPerView: 1.8, slidesPerGroup: 1 },
-            640: { slidesPerView: 2.2, slidesPerGroup: 1 },
-            768: { slidesPerView: 3, slidesPerGroup: 1 },
-            1024: { slidesPerView: 4, slidesPerGroup: 1 },
+            480: { slidesPerView: 1.6 },
+            640: { slidesPerView: 2.2 },
+            768: { slidesPerView: 3 },
+            1024: { slidesPerView: 4 },
           }}
-          navigation={{
-            prevEl: prevRef.current,
-            nextEl: nextRef.current,
-          }}
-          onBeforeInit={(swiper) => {
-            swiper.params.navigation.prevEl = prevRef.current;
-            swiper.params.navigation.nextEl = nextRef.current;
-          }}
-          // extra vertical room so the card's hover shadow isn't clipped
           className="py-2 !pb-6"
         >
-          {products?.map((product) => (
+          {products.map((product) => (
             <SwiperSlide key={product.id} className="!h-auto">
               <ProductCard
                 p={product}
-                list={false}
                 currency={currency}
                 colorIdx={activeColors[product.id] || 0}
                 onColor={(i) => setColor(product.id, i)}
                 fav={wishlist.includes(product.id)}
                 onFav={() => toggleWishlist(product.id)}
                 onOpen={() => goToProduct(product)}
-                onDetails={() => goToProduct(product)}
+                onAddToCart={() => handleAddToCart(product)}
               />
             </SwiperSlide>
           ))}
         </Swiper>
       </div>
+
+      {toast && (
+        <div
+          role="status"
+          className="fixed bottom-4 left-1/2 z-[60] flex max-w-[92vw] -translate-x-1/2 items-center gap-2 rounded-full bg-slate-900 px-4 py-3 text-xs font-semibold text-white shadow-xl"
+        >
+          <span className="truncate">{toast}</span>
+        </div>
+      )}
     </>
   );
 }

@@ -3,6 +3,8 @@ import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../assets/BabalEyeWear.png";
 import { FiShoppingCart } from "react-icons/fi";
 import { isLoggedIn, getUser, getDisplayName, logout } from "../utils/auth";
+import { useCart } from "../context/CartContext";
+import SearchBox from "../components/SearchBox";
 
 const navItems = [
   { id: 1, name: "Home", path: "/" },
@@ -22,10 +24,9 @@ const Navbar = () => {
   const dropdownRef = useRef(null);
 
   const [auth, setAuth] = useState(readAuth);
-  const [searchTerm, setSearchTerm] = useState("");
 
-  // TODO: connect to your real cart. It was a hardcoded 1, which showed a fake badge.
-  const cartCount = 0;
+  // Live cart count from the shared cart
+  const { cartCount } = useCart();
 
   useEffect(() => {
     const refreshAuth = () => setAuth(readAuth());
@@ -34,7 +35,7 @@ const Navbar = () => {
     window.addEventListener("authChange", refreshAuth);
     window.addEventListener("storage", refreshAuth);
 
-    // Close dropdown when clicking outside
+    // Close account dropdown when clicking outside
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(false);
@@ -63,13 +64,9 @@ const Navbar = () => {
     navigate("/UserProfile");
   };
 
-  // Redirect to the search page with the typed query
-  const handleSearch = (e) => {
-    e.preventDefault();
-    const term = searchTerm.trim();
-    if (!term) return;
-    navigate(`/search?q=${encodeURIComponent(term)}`);
-    setMenuOpen(false); // close mobile menu if open
+  const goToCart = () => {
+    setMenuOpen(false);
+    navigate("/cart");
   };
 
   const displayName = getDisplayName(auth.user) || "Account";
@@ -109,24 +106,10 @@ const Navbar = () => {
 
         {/* Desktop actions */}
         <div className="hidden md:flex items-center gap-5">
-          <form onSubmit={handleSearch}>
-            <input
-              type="search"
-              placeholder="Search..."
-              aria-label="Search frames"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              enterKeyHint="search"
-              className="bg-white rounded-full px-4 lg:px-5 py-2 border border-gray-300 outline-none
-                         w-32 lg:w-48 transition-all duration-300 focus:w-40 lg:focus:w-64 focus:border-[#187A6B]"
-            />
-          </form>
+          <SearchBox variant="desktop" />
 
           {/* Cart Icon */}
-          <div
-            className="relative cursor-pointer"
-            onClick={() => console.log("Desktop Cart clicked")}
-          >
+          <div className="relative cursor-pointer" onClick={goToCart}>
             <FiShoppingCart className="hover:text-[#187A6B] transition-colors duration-300" size={25} />
             {cartCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-[#187A6B] text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-sm">
@@ -187,12 +170,9 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Mobile menu button / wrapper */}
+        {/* Mobile cart + menu button */}
         <div className="flex items-center gap-4 md:hidden">
-          <div
-            className="relative cursor-pointer"
-            onClick={() => console.log("Mobile Cart clicked")}
-          >
+          <div className="relative cursor-pointer" onClick={goToCart}>
             <FiShoppingCart className="hover:text-[#187A6B] transition-colors duration-300" size={24} />
             {cartCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-[#187A6B] text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm">
@@ -216,8 +196,8 @@ const Navbar = () => {
 
       {/* Mobile nav panel */}
       <div
-        className={`md:hidden bg-white overflow-hidden transition-all duration-300 ease-in-out shadow-sm
-                    ${menuOpen ? "max-h-[520px] opacity-100" : "max-h-0 opacity-0"}`}
+        className={`md:hidden bg-white overflow-y-auto transition-all duration-300 ease-in-out shadow-sm
+                    ${menuOpen ? "max-h-[85vh] opacity-100" : "max-h-0 opacity-0 overflow-hidden"}`}
       >
         <nav className="flex flex-col px-6 py-4 gap-4 text-black font-medium">
           {navItems.map((item) => (
@@ -238,17 +218,7 @@ const Navbar = () => {
           ))}
 
           <div className="flex flex-col gap-3 pt-2">
-            <form onSubmit={handleSearch}>
-              <input
-                type="search"
-                placeholder="Search..."
-                aria-label="Search frames"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                enterKeyHint="search"
-                className="w-full bg-white rounded-full px-4 py-2 border border-gray-300 outline-none transition-colors duration-300 focus:border-[#187A6B]"
-              />
-            </form>
+            <SearchBox variant="mobile" onSubmitted={() => setMenuOpen(false)} />
 
             {auth.loggedIn ? (
               <div className="grid grid-cols-2 gap-3">
