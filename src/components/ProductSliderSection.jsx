@@ -10,7 +10,7 @@ import useGuardedCart from '../hooks/useGuardedCart';
 const PREV = 'product-slider-prev';
 const NEXT = 'product-slider-next';
 
-function ProductSliderSection({ title, subtitle, products = [], currency = 'NPR' }) {
+function ProductSliderSection({ title, subtitle, products = [], currency = 'NPR ' }) {
   const navigate = useNavigate();
   const { addToCart } = useGuardedCart();
 

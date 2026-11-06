@@ -15,7 +15,7 @@ const ProductDetailPage = () => {
 
   // Catalog product by id, or the product passed from another page (e.g. home slider)
   const base = getProductById(id) || location.state?.product;
-  const currency = location.state?.currency || '$';
+  const currency = location.state?.currency || 'NPR ';
   const found = base && {
     brand: 'Babal Eyewear',
     category: '',
